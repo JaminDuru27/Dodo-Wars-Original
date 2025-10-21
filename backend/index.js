@@ -1,6 +1,11 @@
 const express = require('express')
-const app = express(app)
+const { default: SocketFunctions } = require('./socket/socketFunctions')
+const app = express()
 const http = require('http').createServer(app)
+const env = require('dotenv').config()
+
+app.use(express.static('../frontend'))
+
 const io = require('socket.io')(http, {
     cors:{
         origin: '*',
@@ -8,4 +13,10 @@ const io = require('socket.io')(http, {
     }
 })
 
-const port = 5000
+SocketFunctions(io)
+
+app.get('/', (req, res)=>{
+    res.json({message: `idj`})
+})
+const port = process.env.PORT || 8000
+http.listen(port, ()=>console.log(`Server Running on port ${port}`))
