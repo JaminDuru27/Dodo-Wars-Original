@@ -6,7 +6,7 @@ const Rooms = {}
 const updates = []
 let interval = setInterval(()=>{
     updates.forEach(obj=>obj.update())
-}, 50)
+}, 30)
 function generateRoomId(){
     return Date.now() + 'Room'
 }
@@ -54,7 +54,7 @@ export function SocketFunctions(io){
         })
 
         socket.on('tell-room-to-start-game', (roomid)=>{
-            io.to(roomid).emit('start-game')
+            io.to(roomid).emit('start-game', roomid)
             Rooms[roomid].load()
         })
 

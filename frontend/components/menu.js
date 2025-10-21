@@ -1,4 +1,5 @@
 import { domextract } from "../utils/domextract.js"
+import { Game } from "./game.js"
 let PLAYERS = {}
 let ROOMS = {}
 
@@ -39,13 +40,14 @@ export function Menu(socket){
             socket.on(`hosted-room`, ({id})=>{
                 console.log(`hosted`, id)
                 //start wait room and configue game
+                socket.emit(`tell-room-to-start-game`, id)
+
             })
             this.dom.join.onclick = ()=>{
                 socket.emit(`join`)
             }
             socket.on(`joined-room`, ({id})=>{
                 console.log(`joined`,id)
-                socket.emit(`tell-room-to-start-game`, id)
             })
         },
         load(){
@@ -54,14 +56,10 @@ export function Menu(socket){
         },
         update(){}
     }
-    socket.on(`update-players-and-rooms`, ({players, rooms})=>{
-        PLAYERS = players
-        ROOMS = rooms
-    })
     socket.on(`start-game`, (roomid)=>{
-        // console.log(roomid)
-        // const game = Game(roomid, socket)
-        // game.load(socket, ROOMS[roomid])
+        console.log(`Current Room`,roomid)
+        const game = Game(roomid, socket)
+        game.load()
     })
     res.load()
     return res

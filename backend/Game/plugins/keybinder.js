@@ -1,0 +1,30 @@
+export function Keybinder(socket){
+    const res = {
+        keydownarray:[],
+        keyuparray:[],
+        onkeydown({key,cb}){
+            this.keydownarray.push({key, cb})
+            return this
+        },
+        onkeyup({key,cb}){
+            this.keyuparray.push({key, cb})
+            return this
+        },
+        load(){},
+        update(){}
+    }
+    res.load()
+    console.log(`kokokodkokodkwokok`)
+    
+    socket.on('keydown', ({key})=>{
+        res.keydownarray.forEach((p)=>{
+            if(key === p.key)p.cb()
+        })
+    })
+    socket.on('keyup', (key)=>{
+        res.keyuparray.forEach((p)=>{
+            if(key === p.key)p.cb()
+        })
+    })
+    return res
+}
