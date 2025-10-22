@@ -4,8 +4,9 @@ export function Game(socket, io, Room){
     const res ={
         players: [],
         rects: [],
+        sprites: [],
         load(){
-            this.world = World(this)
+            this.world = World(socket,this)
             this.loadPlayerObject()
         },
         loadPlayerObject(){
@@ -18,20 +19,29 @@ export function Game(socket, io, Room){
             const data = {}
             data.players = []
             data.world = {src: this?.world?.data?.src, w: this?.world?.w, h: this?.world?.h}
+            // data.rects  =  [...this.rects.map(rect=>{return{x: rect.x, y: rect.y, w: rect.w, h: rect.h}})]
+            data.sprites = [...this.sprites.map(sp=>{
+                return {name: sp.name,flip: sp.flip, x: sp.x, y: sp.y, w:sp.w, h: sp.h, framex: sp.framex, framey: sp.framey, sw:sp.sw, sh: sp.sh,}
+            })]
+            data.sprites.sort((a, b) => a.zIndex - b.zIndex);
             this.players.forEach(p=>{
                 const pp = {
                     rect: {},
                 }
                 const r = p.character.rect
-                pp.rect = {x: r.x, y: r.y, w:r.w, h: r.h, color: r.color}
+                const pn = p.character.pan
+                const sp = p.character.sprite
+                const txt = p.character.text
+                pp.text = {content: txt.text, x:txt.x, y: txt.y}
+                // pp.rect = {x: r.x, y: r.y, w:r.w, h: r.h, color: r.color}
+                // pp.pan = {x: pn?.x, y: pn?.y, w:pn.offw, h: pn.offh,}
                 data.players.push(pp)
             })
-            data.rects  =  []
-            this.rects.forEach(rect=>{data.rects.push({x: rect.x, y: rect.y, w: rect.w, h: rect.h})})
             return data
         },
         update(){
             this.players.forEach(p=>p.update())
+            this?.world?.update()
             io.to(Room.id).emit(`game-update`, {...this.compileoutput()})
         }
     }

@@ -19,7 +19,7 @@ export function Keybinder(socket){
             if(key === p.key)p.cb()
         })
     })
-    socket.on('keyup', (key)=>{
+    socket.on('keyup', ({key})=>{
         res.keyuparray.forEach((p)=>{
             if(key === p.key)p.cb()
         })

@@ -12,6 +12,9 @@ export function Player(socket, io){
         },
         update(){
             this?.character?.rect?.update()
+            this?.character?.pan?.update()
+            this?.character?.sprite?.update()
+            this?.character?.text?.update()
         },
         
         getInfo(){
