@@ -5,9 +5,9 @@ export function Room(roomid, socket, io, updates){
         roomid,
         hostid: socket.id,
         players : [],
-        add(playerinfo){
-            if(!this.players.find(p=>p.id === playerinfo.id))
-            this.players.push(playerinfo)
+        add(player){
+            if(!this.players.find(p=>p.id === player.id))
+            this.players.push(player)
         },
         getInfo(){
             return {

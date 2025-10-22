@@ -1,4 +1,3 @@
-import { Player } from "./player/player(game).js"
 import { World } from "./plugins/world.js"
 
 export function Game(socket, io, Room){
@@ -11,7 +10,8 @@ export function Game(socket, io, Room){
         },
         loadPlayerObject(){
             Room.players.forEach(player=>{
-                this.players.push(Player(player, socket, io, this))
+                player.load(Room, this)
+                this.players.push(player)
             })
         },
         compileoutput(){

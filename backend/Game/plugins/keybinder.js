@@ -14,8 +14,6 @@ export function Keybinder(socket){
         update(){}
     }
     res.load()
-    console.log(`kokokodkokodkwokok`)
-    
     socket.on('keydown', ({key})=>{
         res.keydownarray.forEach((p)=>{
             if(key === p.key)p.cb()

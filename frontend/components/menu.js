@@ -40,7 +40,6 @@ export function Menu(socket){
             socket.on(`hosted-room`, ({id})=>{
                 console.log(`hosted`, id)
                 //start wait room and configue game
-                socket.emit(`tell-room-to-start-game`, id)
 
             })
             this.dom.join.onclick = ()=>{
@@ -48,6 +47,7 @@ export function Menu(socket){
             }
             socket.on(`joined-room`, ({id})=>{
                 console.log(`joined`,id)
+                socket.emit(`tell-room-to-start-game`, id)
             })
         },
         load(){

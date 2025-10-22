@@ -13,7 +13,7 @@ function generateRoomId(){
 export function SocketFunctions(io){
     io.on('connect', (socket)=>{
         // socket.on('connected', ()=>{
-            const player = Player(socket, io)
+            const player = Player(socket, io).getInfo()
             Players[socket.id] = player
             console.log(`player ${socket.id} connected successfully, Players Remaining: ${Object.keys(Players).length}`)
         // })
