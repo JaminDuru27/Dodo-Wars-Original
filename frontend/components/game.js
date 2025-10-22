@@ -92,6 +92,20 @@ export function Game(roomid, socket){
                 this.ctx.font =`12px Arial` 
                 this.ctx.textAlign = `center`
                 this.ctx.fillText(player?.text.content, player?.text?.x, player?.text?.y) 
+            
+                //health
+                this.ctx.lineWidth = 1
+                // this.ctx.strokeRect(player?.health?.x, player?.health?.y, player.health.w, 5)
+                player?.health?.bars.forEach((bar, x)=>{
+                    const w = player.health.w / player?.health?.bars.length
+                    const ww =  bar.health/100 * w
+                    if(ww === 0)return
+                    const gap = 2   
+                    this.ctx.strokeStyle = `#fff`
+                    this.ctx.fillStyle = bar.color
+                    this.ctx.fillRect(player?.health?.x + w * x + (gap * x), player?.health?.y, ww - gap, 6)
+                    this.ctx.strokeRect(player?.health?.x + w * x + (gap * x), player?.health?.y, ww - gap, 6)
+                })
             })
             this.ctx.restore()
             socket.emit(`translate`, ({tx, ty}))

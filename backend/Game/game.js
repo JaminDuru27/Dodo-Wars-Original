@@ -32,7 +32,12 @@ export function Game(socket, io, Room){
                 const pn = p.character.pan
                 const sp = p.character.sprite
                 const txt = p.character.text
+                const h = p.character.health
                 pp.text = {content: txt.text, x:txt.x, y: txt.y}
+                pp.health = {x:h.x, y: h.y, w:h.w, bars: []}
+                h.bars.forEach((bar)=>{
+                    pp.health.bars.push({color: bar.$color,health: bar.$health})
+                })
                 // pp.rect = {x: r.x, y: r.y, w:r.w, h: r.h, color: r.color}
                 // pp.pan = {x: pn?.x, y: pn?.y, w:pn.offw, h: pn.offh,}
                 data.players.push(pp)

@@ -15,6 +15,7 @@ export function Player(socket, io){
             this?.character?.pan?.update()
             this?.character?.sprite?.update()
             this?.character?.text?.update()
+            this?.character?.health?.update()
         },
         
         getInfo(){

@@ -1,3 +1,4 @@
+import { Health } from "../plugins/health.js"
 import { Keybinder } from "../plugins/keybinder.js"
 import { Pan } from "../plugins/pan.js"
 import { Rect } from "../plugins/rect.js"
@@ -38,6 +39,14 @@ export function DodoMan(player, socket, io, Game){
             this.sprite.offh = 40
             this.sprite.zIndex = 2
             this.sprite.addclip(`Idle`).from(0).to(3).loop().delay(2).play()
+ 
+            this.health = Health(this.rect)
+            
+            this.health.addbar().color(`green`).health(100)
+            this.health.addbar().color(`green`).health(100)
+            this.health.addbar().color(`green`).health(100)
+            this.health.addbar().color(`green`).health(100)
+
         },
     }
     res.load()
