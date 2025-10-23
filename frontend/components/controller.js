@@ -1,4 +1,4 @@
-import { AddLaptopControls } from "./laptopketcontrols.js"
+import { AddLaptopControls } from "./laptopcontrols.js"
 import { AddPlayerControlBtns } from "./phonebuttoncontrols.js"
 
 export function Controller(socket, room, Game){
@@ -18,12 +18,17 @@ export function Controller(socket, room, Game){
             if(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent))
             this.device = `phone`
             else this.device = `laptop`
+
+            this.device = `phone`
+
             if(this.device ===`laptop`){
                 this.plugin = AddLaptopControls(socket, room, Game, this)
             }
             if(this.device === `phone`){
                 this.plugin = AddPlayerControlBtns(socket, room, Game, this)
             }
+            console.log(this.device)
+            return this
         },
         load(){},  
     }

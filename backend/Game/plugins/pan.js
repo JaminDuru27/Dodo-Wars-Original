@@ -1,4 +1,4 @@
-export function Pan(socket, Game,rect){
+export function Pan(socket, player,rect){
     const res ={
         offx: 0, offy: 0, offw: 400, offh: 300,
         centerX(){this.offx = (-this.offw/2 + rect.w/2)},
@@ -9,8 +9,8 @@ export function Pan(socket, Game,rect){
         },
         checkleft(){return this.x < -this.tx},
         checktop(){return this.y < -this.ty},
-        checkright(){return this.x + this.offw + this.tx > Game.W },
-        checkbottom(){return this.y + this.offh + this.ty> Game.H },
+        checkright(){return this.x + this.offw + this.tx > player.gameW },
+        checkbottom(){return this.y + this.offh + this.ty> player.gameH },
         checkoutsideveiwport(){
             return (
                 this.checkleft() ||

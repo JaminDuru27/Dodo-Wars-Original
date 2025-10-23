@@ -19,8 +19,14 @@ socket.on('connect', ()=>{
             data.imgw = img.width
             data.imgh = img.height
             socket.emit(`loaded-image-${id}`, (data))
+            console.log(images)
         }
+        if(!images.find(m=>m.name === id))
         images.push({img, name: id})
         img.src= src
     })
 })
+
+window.oncontextmenu = (e)=>{
+    e.preventDefault()
+}

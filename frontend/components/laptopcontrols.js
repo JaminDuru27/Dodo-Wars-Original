@@ -20,7 +20,7 @@ export function AddLaptopControls(socket, room, Game, Controller){
                 const rect = Game.canvas.getBoundingClientRect()
                 this.mx = e.clientX - rect.x - tx
                 this.my = e.clientY - rect.y - ty
-                let r =this?.player?.character?.rect
+                let r =this?.player
                 if(r)
                 this.angle = Math.atan2(this.my - r.y, this.mx - r.x) 
                 // console.log(`move`, this.angle, Math.cos(this.angle) * 12)

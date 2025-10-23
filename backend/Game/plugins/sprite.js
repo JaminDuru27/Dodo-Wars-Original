@@ -57,12 +57,7 @@ export function Sprite(socket, rect, Game){
                 $from: 0,
                 $to: 10,
                 $delay: 10,
-                $flip: false,
                 $onframeevents:[],
-                flip(v = true){
-                    this.$flip = v
-                    return this
-                },
                 name(v){
                     this.$name = v
                     return this
@@ -108,12 +103,11 @@ export function Sprite(socket, rect, Game){
             this.min = clip.$from
             this.max = clip.$to + 1
             this.globaldelay = clip.$delay
-            this.flip = clip.$flip
             this.currentclip = clip
         },
         playclip(name){
-            this.clips.forEash(clip=>{
-                if(clip.name === name)this.play(clip)
+            this.clips.forEach(clip=>{
+                if(clip.$name === name)this.play(clip)
             })
         },
         addclip(name){

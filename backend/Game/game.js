@@ -6,7 +6,7 @@ export function Game(socket, io, Room){
         rects: [],
         sprites: [],
         load(){
-            this.world = World(socket,this)
+            this.world = World(socket, io,Room,this)
             this.loadPlayerObject()
         },
         loadPlayerObject(){
@@ -33,13 +33,15 @@ export function Game(socket, io, Room){
                 const sp = p.character.sprite
                 const txt = p.character.text
                 const h = p.character.health
+                const pr = p.character.particles
                 pp.text = {content: txt.text, x:txt.x, y: txt.y}
                 pp.health = {x:h.x, y: h.y, w:h.w, bars: []}
+                pp.rect = {x: r.x, y: r.y, w: r.w, h: r.h,}
                 h.bars.forEach((bar)=>{
                     pp.health.bars.push({color: bar.$color,health: bar.$health})
                 })
-                // pp.rect = {x: r.x, y: r.y, w:r.w, h: r.h, color: r.color}
-                // pp.pan = {x: pn?.x, y: pn?.y, w:pn.offw, h: pn.offh,}
+                pp.particles = pr.array.filter(prt=>{return{color:prt.color, x: prt.x, alpha: prt.alpha, size: prt.size, type: prt.type}})
+                pp.aimangle = p.aimangle
                 data.players.push(pp)
             })
             return data

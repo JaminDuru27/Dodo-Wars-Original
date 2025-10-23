@@ -40,7 +40,7 @@ export function AddPlayerControlBtns(socket, room, Game, Controller){
                 const dist = Math.min(Math.sqrt(x*x + y*y), maxRadius)
                 let angle = Math.atan2(y, x)
                 dom.thumb.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle)* dist}px)`
-                socket.emit(`on-axis-change-${eventname}`, angle)
+                socket.emit(`on-axis-change-${eventname}`, {angle, dist})
             }
 
         },
@@ -73,6 +73,7 @@ export function AddPlayerControlBtns(socket, room, Game, Controller){
     socket.emit(`controller-loaded`)
     socket.on(`create-button`, (props)=>{
         res.addbtn(props)
+        console.log(`btn crette`)
     },)
     socket.on(`create-joystick`, (props)=>{
         res.addjoystick(props)

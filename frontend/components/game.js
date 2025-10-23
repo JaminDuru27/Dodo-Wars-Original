@@ -1,22 +1,23 @@
 import { images } from "../index.js"
 import { domextract } from "../utils/domextract.js"
+import { Controller } from "./controller.js"
 
 let animates
-let tx  = 0
-let ty = 0
+export let tx  = 0
+export let ty = 0
 let ltx = 0
 let lty = 0
 export function Game(roomid, socket){
     const res = {
         gamestyle(){return `position: absolute;top: 0;left: 0;z-index: 10;width: 100%;height: 100%;`},
-        style(){return `width: 100%; height: 100vh; position: absolute; top: 0; left:0;`},
+        style(){return `width: 100%; height: 100%; position: absolute; top: 0; left:0;`},
         canvasstyle(){return ``},
         ui(){
             this.element = document.createElement(`div`)
             this.element.classList.add(`game`)
             this.element.setAttribute(`style`, this.style())
             this.element.innerHTML += `
-            <div style='${this.gamestyle()} class='menu'></div>
+            <div style='${this.gamestyle()}' class='game'></div>
             <canvas style='${this.canvasstyle()}' class='canvas'></canvas>
             `
             domextract(this.element, 'classname',this)
@@ -37,6 +38,19 @@ export function Game(roomid, socket){
             //animate
             animates = this
             socket?.on('game-update', (game)=>{this.game = game})
+            this.controls = Controller(socket, roomid, this)
+            this.controls.setForThisDevice()
+            .onkeyactive((props)=>{
+                // console.log(props)
+                socket.emit(`set-aim-angle`, props.aimangle)
+                this.aimangle  = props.aimangle
+            })
+            .onkeyinactive((props)=>{
+                // console.log(props)
+                socket.emit(`set-aim-angle`, props.aimangle)
+                this.aimangle = props.aimangle
+            })
+
         },
         lerp(a,b, t){return a + (b - a) * t},
         update(){
@@ -51,7 +65,6 @@ export function Game(roomid, socket){
             this?.game?.sprites?.forEach(sp=>{
                 const img = images.find(img=>img.name === sp.name)
                 if(!img)return
-                // this.ctx.save()  
                 
                 if(!sp.flip){
                     this.ctx.drawImage(
@@ -78,13 +91,7 @@ export function Game(roomid, socket){
                     )
                     this.ctx.restore()
                 }
-                // this.ctx.restore()
             })
-        
-            // this.game?.rects?.forEach(rect=>{
-            //     this.ctx.fillStyle = ` #ff000040` 
-            //     this.ctx.fillRect(rect.x, rect.y, rect.w, rect.h) 
-            // })
             
             this.game.players.forEach(player=>{
                 this.ctx.fillStyle = `#fff` 
@@ -95,7 +102,6 @@ export function Game(roomid, socket){
             
                 //health
                 this.ctx.lineWidth = 1
-                // this.ctx.strokeRect(player?.health?.x, player?.health?.y, player.health.w, 5)
                 player?.health?.bars.forEach((bar, x)=>{
                     const w = player.health.w / player?.health?.bars.length
                     const ww =  bar.health/100 * w
@@ -106,12 +112,41 @@ export function Game(roomid, socket){
                     this.ctx.fillRect(player?.health?.x + w * x + (gap * x), player?.health?.y, ww - gap, 6)
                     this.ctx.strokeRect(player?.health?.x + w * x + (gap * x), player?.health?.y, ww - gap, 6)
                 })
+                //particles
+                this.ctx.save()
+                player.particles.forEach(particle=>{
+                    this.ctx.fillStyle = particle.color
+                    this.ctx.globalAlpha = particle.alpha
+                    this.ctx.fillRect(+(particle.x), +(particle.y), +(particle.size), +(particle.size))
+                })
+                this.ctx.restore()
+                //aimangle
+                this.ctx.save()
+                this.ctx.beginPath()
+                this.ctx.lineWidth = 4
+                this.ctx.setLineDash([9, 6])
+                this.ctx.strokeStyle = `red`
+                this.ctx.globalAlpha = .4
+                // this.ctx.translate(this.player.x, this.player.y)
+                this.ctx.moveTo(player.rect.x + player.rect.w/2, player.rect.y + player.rect.h/2)
+                const length = window.innerHeight
+                const endX =Math.cos(player.aimangle) * length
+                const endY =Math.sin(player.aimangle) * length
+                this.ctx.lineTo(player.rect.x + endX, player.rect.y +endY)
+                this.ctx.stroke()
+                this.ctx.closePath()
+                this.ctx.restore()
+
             })
             this.ctx.restore()
             socket.emit(`translate`, ({tx, ty}))
+            socket.emit(`update-game-size`, ({W: this.canvas.clientWidth, H: this.canvas.clientHeight}))
         },    
     }
     res.load()
+    socket.on(`player-update`, (p)=>{
+        res.player = p
+    })
     socket.on(`translate-x`, (vx)=>{
         if(tx >= 0 && vx < 0){
             tx = 0 

@@ -3,7 +3,7 @@ import { cave } from '../maps/cave-CollisionDatascript.js'
 import {dodomap} from '../maps/dodo map-CollisionDatascript.js'
 import { Rect } from './rect.js'
 import { Sprite } from './sprite.js'
-export function World(socket, Game){
+export function World(socket,io, Room, Game){
     const res = {
         splitby: ['tiles', 'spawn-location', 'weapon-location', 'sprite-location'],
         array: 0,
@@ -16,6 +16,8 @@ export function World(socket, Game){
             this.splitdata()
             this.sprite = Sprite(socket, this, Game)
             .name('map').set(1, 1).loadImage(this.data.src)
+            io.to(Room.id).emit(`load-image`, ({src:this.data.src,  id: this.sprite.name}))
+
         },
         splitdata(){
             this.splitby.forEach(split=>{
