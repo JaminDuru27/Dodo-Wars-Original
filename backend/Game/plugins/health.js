@@ -28,7 +28,7 @@ export function Health(rect){
                 }
             }
             if(!firstbar)return
-            firstbar.$health +=  (this.decrement/100) * 100 
+            firstbar.$health +=  this.decrement
 
             if(firstbar.$health >= 100){
                 this.call('onbarfull')
@@ -48,7 +48,7 @@ export function Health(rect){
                 }
             }
             if(!lastbar)return
-            lastbar.$health -=  (this.decrement/100) * 100 
+            lastbar.$health -=  this.decrement 
             
             if(lastbar.$health <= 0)
             this.call('onbarempty')

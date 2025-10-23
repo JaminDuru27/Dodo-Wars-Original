@@ -27,7 +27,14 @@ export function Game(roomid, socket){
             this.canvas.height = this.canvas.clientHeight
             this.ctx = this.canvas.getContext(`2d`)
         },
-        events(){},
+        events(){
+            window.addEventListener(`resize`, ()=>{
+                this.canvas.setAttribute(`style`,this.canvasstyle())
+                this.canvas = this.dom.canvas
+                this.canvas.width = this.canvas.clientWidth
+                this.canvas.height = this.canvas.clientHeight
+            })
+        },
         load(){
             this.ui()
             socket.emit('ui-loaded')
@@ -50,6 +57,7 @@ export function Game(roomid, socket){
                 socket.emit(`set-aim-angle`, props.aimangle)
                 this.aimangle = props.aimangle
             })
+            this.events()
 
         },
         lerp(a,b, t){return a + (b - a) * t},
@@ -136,6 +144,15 @@ export function Game(roomid, socket){
                 this.ctx.stroke()
                 this.ctx.closePath()
                 this.ctx.restore()
+
+                //WEAPONS
+                //Bombs
+                player.bombs.forEach(bomb=>{
+                    bomb.array.forEach(b=>{
+                        this.ctx.fillStyle = `red`
+                        this.ctx.fillRect(b.x,b.y,b.w, b.h)
+                    })
+                })
 
             })
             this.ctx.restore()

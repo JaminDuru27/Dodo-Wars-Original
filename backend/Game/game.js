@@ -42,6 +42,7 @@ export function Game(socket, io, Room){
                 })
                 pp.particles = pr.array.filter(prt=>{return{color:prt.color, x: prt.x, alpha: prt.alpha, size: prt.size, type: prt.type}})
                 pp.aimangle = p.aimangle
+                pp.bombs = p.loadouts.arsenal.bombs
                 data.players.push(pp)
             })
             return data

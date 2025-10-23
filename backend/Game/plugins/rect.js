@@ -5,41 +5,80 @@ export function Rect(Game){
         w: 50, h: 50,
         vx: 0, vy: 0,color:  "#" + Math.floor(Math.random() * 16777216).toString(16).padStart(6, "0"),
         weight: 1, shouldresolve: true,
+        exception:[],
         buoyancy: 0,
+        $oncollisiontop:[],
+        $oncollisionleft:[],
+        $oncollisionright:[],
+        $oncollisionbottom:[],
+        $oncollisionwith:[],
+        oncollisionwith(name, cb){this.$oncollisionwith.push({name, cb});return this},
+        oncollisiontop(cb){this.$oncollisiontop.push(cb);return this},
+        oncollisionbottom(cb){this.$oncollisionbottom.push(cb);return this},
+        oncollisionleft(cb){this.$oncollisionleft.push(cb);return this},
+        oncollisionright(cb){this.$oncollisionright.push(cb);return this},
+        call(name, prop){this[`$${name}`].forEach(cb=>cb(prop))},
         load(){
             Game.rects.push(this)
+        },
+        remove(){
+            Game.rects.splice(Game.rects.indexOf(this), 1)
         },
         check(){
             Game.rects.forEach(rect=>{
                 if(rect === this)return
-                this.resolveCollision(rect)
+                let is= true
+                this.exception.forEach(ex=>{
+                    if(typeof ex === `string`)if(rect.name === ex)is = false
+                    if(typeof ex === `object`)if(rect === ex)is = false
+                })
+                if(is)this.resolveCollision(rect)
             })
         },
         resolveCollision(rect){
-            if(!this.shouldresolve)return
             
             const overlapX  = Math.max(0, Math.min(this.x + this.w, rect.x + rect.w) - Math.max(this.x, rect.x))
             const overlapY  = Math.max(0, Math.min(this.y + this.h, rect.y + rect.h) - Math.max(this.y, rect.y))
 
             if(overlapX > 0 && overlapY > 0){
                 this.iscolliding = true
-                    if(overlapX > overlapY){
+                if(this.$oncollisionwith.find(e=>e.name == rect.name)){
+                    this.$oncollisionwith.filter(e=>e.name === rect.name).forEach(({cb})=>{cb(rect)})
+                }
+                if(overlapX > overlapY){
                     if(this.y < rect.y){
-                        if(this.vy > 0)this.vy = 0
-                        this.y -= overlapY
-
+                        if(this.shouldresolve){
+                            if(this.vy > 0)this.vy = 0
+                            this.y -= overlapY
+                        }
+                        if(this.collisiondirection !== `bottom`)
+                        this.call(`oncollisionbottom`, rect)
+                        this.collisiondirection = `bottom`
 
                     }else{
-                        if(this.vy < 0)this.vy = 0
-                        this.y += overlapY 
-                        
-                        
+                        if(this.shouldresolve){
+                            if(this.vy < 0)this.vy = 0
+                            this.y += overlapY
+                        } 
+                        if(this.collisiondirection !== `top`)
+                        this.call(`oncollisiontop`, rect)
+                        this.collisiondirection = `top`
                     }
                 }else if(overlapX < overlapY){
                     if(this.x  < rect.x){
-                        this.x -= overlapX
+                        if(this.shouldresolve){
+                            this.x -= overlapX
+                        }
+                        if(this.collisiondirection !== `right`)
+                        this.call(`oncollisionright`, rect)
+                        this.collisiondirection = `right`
                     }else{
-                        this.x += overlapX
+                        if(this.shouldresolve){
+                            this.x += overlapX
+                        }
+                        if(this.collisiondirection !== `left`)
+                        this.call(`oncollisionleft`, rect)
+                        this.collisiondirection = `left`
                     }
                 }
             }

@@ -61,7 +61,6 @@ export function Menu(socket){
     socket.on(`start-game`, (roomid)=>{
         console.log(`Current Room`,roomid)
         const game = Game(roomid, socket)
-        game.load()
     })
     res.load()
     return res

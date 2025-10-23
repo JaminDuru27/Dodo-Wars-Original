@@ -1,5 +1,6 @@
 export function Keybinder(socket){
     const res = {
+        shouldupdate: true,
         keydownarray:[],
         keyuparray:[],
         onkeydown({key,cb}){
@@ -16,11 +17,13 @@ export function Keybinder(socket){
     res.load()
     socket.on('keydown', ({key})=>{
         res.keydownarray.forEach((p)=>{
+            if(res.shouldupdate)
             if(key === p.key)p.cb()
         })
     })
     socket.on('keyup', ({key})=>{
         res.keyuparray.forEach((p)=>{
+            if(res.shouldupdate)
             if(key === p.key)p.cb()
         })
     })

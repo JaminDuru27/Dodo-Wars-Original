@@ -8,7 +8,7 @@ let interval = setInterval(()=>{
     updates.forEach(obj=>obj.update())
 }, 30)
 function generateRoomId(){
-    return Date.now() + 'Room'
+    return 'room-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 8);
 }
 export function SocketFunctions(io){
     io.on('connect', (socket)=>{

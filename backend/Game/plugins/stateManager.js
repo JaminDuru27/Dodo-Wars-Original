@@ -1,5 +1,6 @@
 export function StateManager(){
     const res = {
+        shouldupdate: true,
         states: [],
         load(){},
         createstateobj(){
@@ -32,6 +33,7 @@ export function StateManager(){
             return state
         },
         update(){
+            if(!this.shouldupdate)return
             this.states.forEach(state=>{
                 if(state.conds() && this?.state !== state){
                     this.state = state

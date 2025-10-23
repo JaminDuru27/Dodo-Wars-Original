@@ -1,5 +1,6 @@
 export function Particles(rect){
     const res ={
+        shouldupdate: true,
         vx:0, vy: 0,
         array:[],
         createparticle({size,weight, type, offx,offy, wb, hb, dec}){
@@ -32,6 +33,7 @@ export function Particles(rect){
             return data 
         },
         populate({number  = 0, size = 0, type = 'rect', weight=0.01, wb = 0, hb = 0, offx = 0, offy = 0, dec= 0.02}){
+            if(!this.shouldupdate)return
             for(let x = 0; x<number;x++){
                 this.array.push(this.createparticle({size, type, weight, offx, offy, wb, hb, dec}))
             }
@@ -39,6 +41,7 @@ export function Particles(rect){
         },
         load(){},
         update(){
+            if(!this.shouldupdate)return
             this?.array?.forEach(p=>{
                 p.update()
             })

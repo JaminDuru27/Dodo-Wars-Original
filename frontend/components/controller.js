@@ -19,15 +19,15 @@ export function Controller(socket, room, Game){
             this.device = `phone`
             else this.device = `laptop`
 
-            this.device = `phone`
+            // this.device = `phone`
 
-            if(this.device ===`laptop`){
+            if(this.device ===`laptop` && !this.plugin){
                 this.plugin = AddLaptopControls(socket, room, Game, this)
             }
-            if(this.device === `phone`){
+            if(this.device === `phone` && !this.plugin){
+                console.log(this.device)
                 this.plugin = AddPlayerControlBtns(socket, room, Game, this)
             }
-            console.log(this.device)
             return this
         },
         load(){},  
