@@ -74,19 +74,38 @@ export function Game(roomid, socket){
                 const img = images.find(img=>img.name === sp.name)
                 if(!img)return
                 
+                this.ctx.save()
                 if(!sp.flip){
+                    this.ctx.translate(sp.x,sp.y)
+                    this.ctx.rotate(sp.rotation)
+                    this.ctx.fillStyle = ` #ffffff3e`
+                    this.ctx.fillRect(
+                        (sp.rotaton > 0)?-sp.w/2:0,
+                        (sp.rotaton > 0)?-sp.h/2:0,
+                        sp.w,sp.h,)
                     this.ctx.drawImage(
                         img.img,
                         sp.sw * sp.framex,
                         sp.sh * sp.framey,
                         sp.sw,
                         sp.sh,
-                        sp.x,sp.y,sp.w,sp.h,
+                        (sp.rotaton > 0)?-sp.w/2:0,
+                        (sp.rotaton > 0)?-sp.h/2:0,
+                        sp.w,sp.h,
+                        
                     )
                  }else{
-                    this.ctx.save()
                     this.ctx.translate(sp.x + sp.w/2, sp.y + sp.h/2) //x + w/2, y+ w/2
+                    if(sp.rotation === 0)
                     this.ctx.scale(-1, 1)//scale-x = -1
+                    if(sp.rotation !== 0)
+                    this.ctx.scale(1, -1)//scale-x = -1
+
+                    this.ctx.rotate(-sp.rotation)
+                    this.ctx.fillStyle = ` #ffffff3e`
+                    this.ctx.fillRect(-sp.w /2,//-w/2
+                        -sp.h /2, //-h/2
+                        sp.w,sp.h,)
                     this.ctx.drawImage(
                         img.img,
                         sp.sw * sp.framex,
@@ -97,8 +116,9 @@ export function Game(roomid, socket){
                         -sp.h /2, //-h/2
                         sp.w,sp.h,
                     )
-                    this.ctx.restore()
                 }
+                this.ctx.restore()
+
             })
             
             this.game.players.forEach(player=>{
@@ -149,11 +169,13 @@ export function Game(roomid, socket){
                 //Bombs
                 player.bombs.forEach(bomb=>{
                     bomb.array.forEach(b=>{
-                        this.ctx.fillStyle = `red`
+                        this.ctx.fillStyle = `transparent`
                         this.ctx.fillRect(b.x,b.y,b.w, b.h)
                     })
                 })
 
+                this.ctx.fillStyle = ` #ff000031`
+                this.ctx.fillRect(player.rect.x, player.rect.y, player.rect.w, player.rect.h)
             })
             this.ctx.restore()
             socket.emit(`translate`, ({tx, ty}))

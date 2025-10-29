@@ -1,8 +1,10 @@
 import { Grenade } from "../weapons/grenade.js"
+import { Rifle } from "../weapons/rifle.js"
 
 export function Loadouts(socket, player, Game){
     const res = {
         arsenal: {
+            assault: [Rifle(socket, player, Game)],
             bombs:[Grenade(socket, player, Game)],
         },
         
@@ -10,7 +12,7 @@ export function Loadouts(socket, player, Game){
             this.array= [
                 {
                     id: 0,
-                    primary_assault: undefined,
+                    primary_assault: 'Rifle',
                     secondary_assault: undefined,
                     primary_bomb: 'Grenade',
                     secondary_bomb: undefined,
@@ -19,7 +21,7 @@ export function Loadouts(socket, player, Game){
                 },
             ]
             this.loadout = this.array[0]
-            this.setWeapon(`Grenade`)
+            this.setWeapon(`Rifle`)
             
         },
         setWeapon(name){

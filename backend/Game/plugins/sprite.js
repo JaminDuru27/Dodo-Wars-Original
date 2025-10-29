@@ -5,8 +5,8 @@ export function Sprite(socket, rect, Game){
         nx: 8, ny: 8, deltime: 0, 
         frame: 0, min: 0, framex: 0, framey: 0, max:1,
         loop: true, globaldelay: 10, clips: [],
-        flip: false, zIndex: 1,
-        name(name){
+        flip: false, zIndex: 1, rotation:0,
+        setname(name){
             this.name = name
             return this
         },
@@ -32,6 +32,9 @@ export function Sprite(socket, rect, Game){
             if(!Game.sprites.find(e=>e === this))
             Game.sprites.push(this)
         },
+        remove(){
+            this.delete = true
+        },
         calcframe(){
             this.frame += 1
 
@@ -42,6 +45,7 @@ export function Sprite(socket, rect, Game){
             }
             this.framex = this.frame % this.nx
             this.framey = Math.floor(this.frame / this.ny)
+
         },
         delay(cb, time){
             if(this.deltime > time){
@@ -80,16 +84,16 @@ export function Sprite(socket, rect, Game){
                 },
                 play: ()=>{
                     this.play(data)
+                    return data
                 },
                 onframe:(frame, callback)=>{
-                    data.$onframeevents.push({cond: ()=>this.frame >= frame, callback})
+                    data.$onframeevents.push({cond: ()=>this.frame === frame, callback})
                     return data
                 },
                 update(){
                     this.$onframeevents.forEach(({cond, callback}, x)=>{
                         if(cond()){
                             callback()
-                            this.$onframeevents.splice(x, 1)
                         }
                     })
                 }

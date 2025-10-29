@@ -1,4 +1,6 @@
-export function Rect(Game){
+// import { images } from "../../../frontend";
+
+export function Rect(Game, push = true){
     const res = {
         x: Math.random() * 400, 
         y: 100, 
@@ -19,18 +21,26 @@ export function Rect(Game){
         oncollisionright(cb){this.$oncollisionright.push(cb);return this},
         call(name, prop){this[`$${name}`].forEach(cb=>cb(prop))},
         load(){
+            if(push)
             Game.rects.push(this)
         },
         remove(){
-            Game.rects.splice(Game.rects.indexOf(this), 1)
+            this.delete = true
+            // Game.rects.splice(Game.rects.indexOf(this), 1)
         },
         check(){
             Game.rects.forEach(rect=>{
                 if(rect === this)return
                 let is= true
                 this.exception.forEach(ex=>{
+                    
                     if(typeof ex === `string`)if(rect.name === ex)is = false
                     if(typeof ex === `object`)if(rect === ex)is = false
+                    if(ex === `self`){
+                        if(rect.name === this.name){
+                            is = false
+                        }
+                    }
                 })
                 if(is)this.resolveCollision(rect)
             })
@@ -39,10 +49,10 @@ export function Rect(Game){
             
             const overlapX  = Math.max(0, Math.min(this.x + this.w, rect.x + rect.w) - Math.max(this.x, rect.x))
             const overlapY  = Math.max(0, Math.min(this.y + this.h, rect.y + rect.h) - Math.max(this.y, rect.y))
-
             if(overlapX > 0 && overlapY > 0){
                 this.iscolliding = true
-                if(this.$oncollisionwith.find(e=>e.name == rect.name)){
+                // console.log((this.$oncollisionwith.length>=1)?console.log(this.$oncollisionwith[0].name):'', rect.name)
+                if(this.$oncollisionwith.find(e=>e.name === rect.name)){
                     this.$oncollisionwith.filter(e=>e.name === rect.name).forEach(({cb})=>{cb(rect)})
                 }
                 if(overlapX > overlapY){
@@ -51,7 +61,7 @@ export function Rect(Game){
                             if(this.vy > 0)this.vy = 0
                             this.y -= overlapY
                         }
-                        if(this.collisiondirection !== `bottom`)
+                        if(this.collisiondirection !== `bottom` && (this.vy === this.weight || this.vy === 0))
                         this.call(`oncollisionbottom`, rect)
                         this.collisiondirection = `bottom`
 

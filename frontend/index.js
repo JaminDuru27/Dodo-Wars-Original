@@ -7,7 +7,6 @@ socket.on('connect', ()=>{
     Menu(socket)
     window.onkeydown = (e)=>{
         socket.emit('keydown', ({key:e.key}))
-        console.log(e.key)
     }
     window.onkeyup = (e)=>{
         socket.emit('keyup', ({key:e.key}))
@@ -19,7 +18,6 @@ socket.on('connect', ()=>{
             data.imgw = img.width
             data.imgh = img.height
             socket.emit(`loaded-image-${id}`, (data))
-            console.log(images)
         }
         if(!images.find(m=>m.name === id))
         images.push({img, name: id})

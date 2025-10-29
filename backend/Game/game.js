@@ -21,7 +21,7 @@ export function Game(socket, io, Room){
             data.world = {src: this?.world?.data?.src, w: this?.world?.w, h: this?.world?.h}
             // data.rects  =  [...this.rects.map(rect=>{return{x: rect.x, y: rect.y, w: rect.w, h: rect.h}})]
             data.sprites = [...this.sprites.map(sp=>{
-                return {name: sp.name,flip: sp.flip, x: sp.x, y: sp.y, w:sp.w, h: sp.h, framex: sp.framex, framey: sp.framey, sw:sp.sw, sh: sp.sh,}
+                return {name: sp.name,flip: sp.flip, rotation:sp.rotation, x: sp.x, y: sp.y, w:sp.w, h: sp.h, framex: sp.framex, framey: sp.framey, sw:sp.sw, sh: sp.sh,}
             })]
             data.sprites.sort((a, b) => a.zIndex - b.zIndex);
             this.players.forEach(p=>{
@@ -51,6 +51,9 @@ export function Game(socket, io, Room){
             this.players.forEach(p=>p.update())
             this?.world?.update()
             io.to(Room.id).emit(`game-update`, {...this.compileoutput()})
+
+            this.rects = [...this.rects.filter(rect=>!rect.delete)]
+            this.sprites = [...this.sprites.filter(sprite=>!sprite.delete)]
         }
     }
     res.load()

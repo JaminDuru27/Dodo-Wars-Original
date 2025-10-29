@@ -14,12 +14,22 @@ export function DodoMan(player, socket, io, Game){
         load(){
             //RECT
             this.rect= Rect(Game)
-            this.rect.name = `player`
-            this.rect.oncollisionright(()=>{console.log(`right`)})
-            this.rect.exception.push(`bomb${socket.id}`)
+            this.rect.name = `player-${socket.id}`
+            this.rect.exception.push(`bomb${socket.id}`, `bullet-${socket.id}`)
             this.rect.oncollisionwith(`damage`, (rect)=>{
                 this.health.decrement = rect.damage
                 this.health.decrease()
+            })
+            this.rect.oncollisionbottom(()=>{
+                if(this.hardlanding){
+                    const hard = {
+                        number: 100, size: 20, type: `rect`, 
+                        wb: 500, hb: 5, 
+                        dec:0.03, offx: -250,offy: this.rect.h - 5,}
+
+                    this.particles.populate(hard)
+                    this.hardlanding = false
+                }
             })
 
             //TEXT
@@ -60,20 +70,47 @@ export function DodoMan(player, socket, io, Game){
             .onkeyup({key: `ArrowUp`, cb:()=>{
                 this.slamming = false
             }})
+            .onkeyup({key: `s`, cb:()=>{
+                this.stateManager.setstate(`Roll`)
+            }})
+            .onkeyup({key: `d`, cb:()=>{
+                this.stateManager.setstate(`Slam`)
+            }})
 
             //PAN
             this.pan = Pan(socket, player, this.rect)
             this.sprite = Sprite(socket, this.rect, Game)
-            .name('dodoman').set(8, 8).loadImage('/public/players/dodoman.png')
-            this.sprite.offx = -20
-            this.sprite.offy = -27
-            this.sprite.offw = 40
-            this.sprite.offh = 40
+            .setname('dodoman').set(8, 8).loadImage('/public/players/dodoman.png')
+            this.sprite.offx = -40
+            this.sprite.offy = -57
+            this.sprite.offw = 75
+            this.sprite.offh = 70
             this.sprite.zIndex = 2
+            let count = 0
             this.sprite.addclip(`Idle`).from(0).to(3).loop().delay(2).play()
             this.sprite.addclip(`Run`).from(17).to(31).loop().delay(1)
             this.sprite.addclip(`Roll`).from(40).to(48).loop().delay(1)
-            this.sprite.addclip(`Hit`).from(49).to(51).loop().delay(0)
+            .onframe(48,()=>{
+                if(this.rolling){
+                    this.rolling = false
+                    this.stateManager.setstate(`Idle`)
+                    this.rect.vx = 0
+                }
+                if(this.isslamming)count = (count + 1) % 4
+                if(count === 2){
+                    this.rect.vy  = 25
+                }
+                if(this.slamming && count >= 3){
+                    this.slammin = false
+                    this.stateManager.setstate(`Idle`)                    
+                }
+            })
+            this.sprite.addclip(`Hit`).from(49).to(51).loop().delay(0).
+            onframe(50, ()=>{
+                this.sprite.playclip(`Idle`)
+                this.stateManager.setstate(`Idle`)
+            })
+            
             this.sprite.addclip(`Death`).from(56).to(58).loop(false).delay(5)
  
             //HEALTH
@@ -103,24 +140,38 @@ export function DodoMan(player, socket, io, Game){
  
             //MANAGER
             this.stateManager = StateManager()
-             this.stateManager.add().name('Idle').cond(()=>!this.falsestate && this.rect.vx === 0 && (this.rect.vy === this.rect.weight || this.rect.vy === 0))
+             this.stateManager.add().name('Idle').cond(()=>!this.slamming && !this.rolling && !this.falsestate && this.rect.vx === 0 && (this.rect.vy === this.rect.weight || this.rect.vy === 0))
             .cb(()=>{
                 this.sprite.playclip('Idle')
             })
-            this.stateManager.add().name('RunLeft').cond(()=>!this.falsestate && this.rect.vx < 0)
+            this.stateManager.add().name('RunLeft').cond(()=>!this.slamming && !this.rolling && !this.falsestate && this.rect.vx < 0)
             .cb(()=>{
                 this.sprite.playclip('Run')
                 this.sprite.flip = true
             })
-            this.stateManager.add().name('RunRight').cond(()=>!this.falsestate && this.rect.vx > 0)
+            this.stateManager.add().name('RunRight').cond(()=>!this.slamming && !this.rolling && !this.falsestate && this.rect.vx > 0)
             .cb(()=>{
                 this.sprite.playclip('Run')
                 this.sprite.flip = false
             })
-            this.stateManager.add().name('Fall').cond(()=>!this.falsestate && this.rect.vy > this.rect.weight)
+            this.stateManager.add().name('Fall').cond(()=>!this.slamming && !this.rolling && !this.falsestate && this.rect.vy > this.rect.weight)
             .cb(()=>{
                 this.sprite.playclip('Roll')
                 this.sprite.flip = false
+            })
+
+            this.stateManager.add().name('Roll').cond(()=>false)
+            .cb(()=>{
+                this.rolling = true
+                this.rect.vx = (!this.sprite.flip)?15:-15
+                this.sprite.playclip('Roll')
+            })
+            this.stateManager.add().name('Slam').cond(()=>false)
+            .cb(()=>{
+                this.slamming = true
+                this.rect.vy =  -20
+                this.sprite.playclip('Roll')
+                this.hardlanding = true
             })
 
             //CONTROLS

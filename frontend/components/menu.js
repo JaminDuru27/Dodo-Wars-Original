@@ -49,6 +49,7 @@ export function Menu(socket){
             }
             socket.on(`joined-room`, ({id})=>{
                 console.log(`joined`,id)
+                
 
             })
         },

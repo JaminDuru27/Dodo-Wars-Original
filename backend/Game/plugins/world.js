@@ -10,12 +10,12 @@ export function World(socket,io, Room, Game){
         cw: 50, ch: 50,
         x: 0, y: 0,
         load(){
-            this.data = cave()
+            this.data = dodomap()
             this.w = this.data.griddata.rows * this.cw
             this.h = this.data.griddata.cols * this.ch
             this.splitdata()
             this.sprite = Sprite(socket, this, Game)
-            .name('map').set(1, 1).loadImage(this.data.src)
+            .setname('map').set(1, 1).loadImage(this.data.src)
             io.to(Room.id).emit(`load-image`, ({src:this.data.src,  id: this.sprite.name}))
 
         },

@@ -6,7 +6,7 @@ const Rooms = {}
 const updates = []
 let interval = setInterval(()=>{
     updates.forEach(obj=>obj.update())
-}, 30)
+}, 16)
 function generateRoomId(){
     return 'room-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 8);
 }

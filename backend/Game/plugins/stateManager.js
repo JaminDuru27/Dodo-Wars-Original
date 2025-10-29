@@ -3,6 +3,23 @@ export function StateManager(){
         shouldupdate: true,
         states: [],
         load(){},
+        setstate(name){
+            this.states.forEach(state=>{
+                if(!this.state){
+                    this.state = state
+                    this.state.$call = 0
+                    state.callcbs()
+                    return
+                }
+
+                if(this.state.name !== state.name)
+                if(state.$name === name){
+                    this.state = state
+                    this.state.$call = 0
+                    state.callcbs()
+                }
+            })
+        },
         createstateobj(){
             const data ={
                 $name: `state`,
