@@ -78,11 +78,11 @@ export function Game(roomid, socket){
                 if(!sp.flip){
                     this.ctx.translate(sp.x,sp.y)
                     this.ctx.rotate(sp.rotation)
-                    this.ctx.fillStyle = ` #ffffff3e`
-                    this.ctx.fillRect(
-                        (sp.rotaton > 0)?-sp.w/2:0,
-                        (sp.rotaton > 0)?-sp.h/2:0,
-                        sp.w,sp.h,)
+                    // this.ctx.fillStyle = ` #ffffff3e`
+                    // this.ctx.fillRect(
+                    //     (sp.rotaton > 0)?-sp.w/2:0,
+                    //     (sp.rotaton > 0)?-sp.h/2:0,
+                    //     sp.w,sp.h,)
                     this.ctx.drawImage(
                         img.img,
                         sp.sw * sp.framex,
@@ -102,10 +102,10 @@ export function Game(roomid, socket){
                     this.ctx.scale(1, -1)//scale-x = -1
 
                     this.ctx.rotate(-sp.rotation)
-                    this.ctx.fillStyle = ` #ffffff3e`
-                    this.ctx.fillRect(-sp.w /2,//-w/2
-                        -sp.h /2, //-h/2
-                        sp.w,sp.h,)
+                    // this.ctx.fillStyle = ` #ffffff3e`
+                    // this.ctx.fillRect(-sp.w /2,//-w/2
+                    //     -sp.h /2, //-h/2
+                    //     sp.w,sp.h,)
                     this.ctx.drawImage(
                         img.img,
                         sp.sw * sp.framex,
@@ -120,7 +120,7 @@ export function Game(roomid, socket){
                 this.ctx.restore()
 
             })
-            
+            this.ctx.globalAlpha = 1
             this.game.players.forEach(player=>{
                 this.ctx.fillStyle = `#fff` 
                 this.ctx.lineWidth = 1
@@ -174,8 +174,8 @@ export function Game(roomid, socket){
                     })
                 })
 
-                this.ctx.fillStyle = ` #ff000031`
-                this.ctx.fillRect(player.rect.x, player.rect.y, player.rect.w, player.rect.h)
+                // this.ctx.fillStyle = ` #ff000031`
+                // this.ctx.fillRect(player.rect.x, player.rect.y, player.rect.w, player.rect.h)
             })
             this.ctx.restore()
             socket.emit(`translate`, ({tx, ty}))

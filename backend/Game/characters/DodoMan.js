@@ -1,3 +1,4 @@
+import { Animate } from "../plugins/animation.js"
 import { Controls } from "../plugins/controls(phone).js"
 import { Health } from "../plugins/health.js"
 import { Keybinder } from "../plugins/keybinder.js"
@@ -15,11 +16,13 @@ export function DodoMan(player, socket, io, Game){
             //RECT
             this.rect= Rect(Game)
             this.rect.name = `player-${socket.id}`
-            this.rect.exception.push(`bomb${socket.id}`, `bullet-${socket.id}`)
+            this.rect.exception.push(`bomb${socket.id}`, `bullet-${socket.id}`, `damage`)
             this.rect.oncollisionwith(`damage`, (rect)=>{
+                if(rect.id === socket.id)return
                 this.health.decrement = rect.damage
                 this.health.decrease()
             })
+            
             this.rect.oncollisionbottom(()=>{
                 if(this.hardlanding){
                     const hard = {
@@ -34,7 +37,7 @@ export function DodoMan(player, socket, io, Game){
 
             //TEXT
             this.text = Text(this.rect).set(player.name)
-            
+            this.text.offy =-30
             //KEYBINDER
             this.keybinder = Keybinder(socket, io)
             this.keybinder.onkeydown({key: 'ArrowUp',cb:()=>{
@@ -96,13 +99,17 @@ export function DodoMan(player, socket, io, Game){
                     this.stateManager.setstate(`Idle`)
                     this.rect.vx = 0
                 }
-                if(this.isslamming)count = (count + 1) % 4
+                if(this.isslamming)
                 if(count === 2){
                     this.rect.vy  = 25
                 }
-                if(this.slamming && count >= 3){
-                    this.slammin = false
-                    this.stateManager.setstate(`Idle`)                    
+                if(this.slamming){
+                    count = (count + 1) % 4
+                    if(count >= 3){
+                        this.slammin = false
+                        this.stateManager.setstate(`Idle`)
+                    }
+                                       
                 }
             })
             this.sprite.addclip(`Hit`).from(49).to(51).loop().delay(0).
@@ -129,8 +136,7 @@ export function DodoMan(player, socket, io, Game){
                 this.controls.shouldupdate = false
                 this.stateManager.shouldupdate = false
                 this.particles.shouldupdate = false
-                this.sprite.playclip(`Death`)
-                console.log(`dead`)
+                this.animator.playAnimation(`Death`)
             })
 
             //PARTICLES
@@ -172,6 +178,7 @@ export function DodoMan(player, socket, io, Game){
                 this.rect.vy =  -20
                 this.sprite.playclip('Roll')
                 this.hardlanding = true
+
             })
 
             //CONTROLS
@@ -210,6 +217,38 @@ export function DodoMan(player, socket, io, Game){
 
                 }
             })
+
+            this.animator = Animate()
+            this.animator.addAnimation(`Intro`) 
+            .from(this.rect)
+            .key(0,{vx: 1})
+            .key(10,{vy: -10})
+            .key(15,{vx: -1})
+            .key(20,{vx: 0})
+            .from(this.sprite)
+            .key(0, ()=>{
+                this.sprite.playclip(`Run`)
+                this.sprite.flip = false
+            })
+            .key(15, ()=>{
+                this.sprite.playclip(`Run`)
+                this.sprite.flip = true
+            }).play()
+
+            this.animator.addAnimation(`Death`) 
+            .from(this.rect)
+            .key(0, ()=>{
+                this.rect.vx = (this.sprite.flip)?-1.5:1.5
+            })
+            .key(10,{vy: -18})
+            .key(11,{vy: 10})
+            .key(12,()=>{
+                this.hardlanding = true
+                this.sprite.playclip(`Death`)
+                this.rect.vx= 0
+                this.rect.remove()
+            })
+            
         },
     }
     res.load()

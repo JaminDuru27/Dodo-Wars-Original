@@ -20,6 +20,7 @@ export function Player(socket, io){
             this?.character?.health?.update()
             this?.character?.particles?.update()
             this?.character?.stateManager?.update()
+            this?.character?.animator?.update()
             this.character.falsestate = false
             socket.emit('player-update', {x:this.character.rect.x, y:this.character.rect.y, w: this.character.rect.w, h: this.character.rect.h })
 

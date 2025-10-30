@@ -42,22 +42,24 @@ export function Rect(Game, push = true){
                         }
                     }
                 })
-                if(is)this.resolveCollision(rect)
+                this.resolveCollision(rect, is)
             })
         },
-        resolveCollision(rect){
-            
+        resolveCollision(rect, ifaccepted){
             const overlapX  = Math.max(0, Math.min(this.x + this.w, rect.x + rect.w) - Math.max(this.x, rect.x))
             const overlapY  = Math.max(0, Math.min(this.y + this.h, rect.y + rect.h) - Math.max(this.y, rect.y))
             if(overlapX > 0 && overlapY > 0){
+                if(ifaccepted)
                 this.iscolliding = true
-                // console.log((this.$oncollisionwith.length>=1)?console.log(this.$oncollisionwith[0].name):'', rect.name)
+            
                 if(this.$oncollisionwith.find(e=>e.name === rect.name)){
                     this.$oncollisionwith.filter(e=>e.name === rect.name).forEach(({cb})=>{cb(rect)})
                 }
+
                 if(overlapX > overlapY){
                     if(this.y < rect.y){
-                        if(this.shouldresolve){
+                        if(ifaccepted)
+                        if(this.shouldresolve ){
                             if(this.vy > 0)this.vy = 0
                             this.y -= overlapY
                         }
@@ -66,7 +68,8 @@ export function Rect(Game, push = true){
                         this.collisiondirection = `bottom`
 
                     }else{
-                        if(this.shouldresolve){
+                        if(ifaccepted)
+                        if(this.shouldresolve ){
                             if(this.vy < 0)this.vy = 0
                             this.y += overlapY
                         } 
@@ -76,14 +79,16 @@ export function Rect(Game, push = true){
                     }
                 }else if(overlapX < overlapY){
                     if(this.x  < rect.x){
-                        if(this.shouldresolve){
+                        if(ifaccepted)
+                        if(this.shouldresolve ){
                             this.x -= overlapX
                         }
                         if(this.collisiondirection !== `right`)
                         this.call(`oncollisionright`, rect)
                         this.collisiondirection = `right`
                     }else{
-                        if(this.shouldresolve){
+                        if(ifaccepted)
+                        if(this.shouldresolve ){
                             this.x += overlapX
                         }
                         if(this.collisiondirection !== `left`)

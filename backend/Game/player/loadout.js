@@ -36,6 +36,7 @@ export function Loadouts(socket, player, Game){
             this.loadout = this.array[id]
         },
         update(){
+            if(player.character.falsestate)return
             this?.weapon?.update()
         },
     }

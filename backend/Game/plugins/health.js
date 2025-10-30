@@ -2,7 +2,7 @@ export function Health(rect){
     const res ={
         bars:[],
         decrement: 10, 
-        offx: 0, offy: -5,
+        offx: 0, offy: -20,
         w: 100,
         $onincrement:[],$ondecrement:[],
         $onbarfull:[],$onbarempty:[],

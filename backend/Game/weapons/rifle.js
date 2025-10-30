@@ -26,6 +26,8 @@ export function Rifle(socket, player, Game){
             rect.vy = Math.sin(player.aimangle)
             rect.x = player.character.rect.x
             rect.y = player.character.rect.y
+            rect.w = 10
+            rect.h = 10
             rect.speed =  10
             rect.weight =  0
             rect.exception = [`player-${socket.id}`, `self`, `damage`]
@@ -34,7 +36,7 @@ export function Rifle(socket, player, Game){
             rect.damage = 2
             rect.vx *= rect.speed
             rect.vy *= rect.speed
-            rect.shouldresolve = false
+            rect.id = socket.id
             const sprite = Sprite(socket, rect, Game).setname('bullet').set(1, 1)
             .loadImage(`/public/weapons/bomb.png`)
             const spritedust = Sprite(socket, rect, Game).setname('bullet-dust')
@@ -45,11 +47,11 @@ export function Rifle(socket, player, Game){
                 rect.delete = true
                 spritedust.remove()
             }).play()
-            spritedust.offw = -10
-            spritedust.offh = -10
+            spritedust.offw = 10
+            spritedust.offh = 10
             
-            sprite.offw = -20
-            sprite.offh = -20
+            sprite.offw = 5
+            sprite.offh = 5
             rect.updateall = ()=>{
                 rect.update()
                 sprite.update()
@@ -57,7 +59,6 @@ export function Rifle(socket, player, Game){
                 rect.y += rect.vy
                 rect.l += rect.vx
                 if(rect.l > 350){
-                    // rect.shouldresolve = true
                     rect.vx =0
                     rect.vy =0
                     rect.remove()
@@ -65,7 +66,6 @@ export function Rifle(socket, player, Game){
                     rect.delete = true
                 }
                 if(rect.iscolliding){
-                    rect.shouldresolve = false
                     spritedust.update()
                     rect.name = `damage`
                     rect.vx =0

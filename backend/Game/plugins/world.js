@@ -10,7 +10,7 @@ export function World(socket,io, Room, Game){
         cw: 50, ch: 50,
         x: 0, y: 0,
         load(){
-            this.data = dodomap()
+            this.data = cave()
             this.w = this.data.griddata.rows * this.cw
             this.h = this.data.griddata.cols * this.ch
             this.splitdata()
